@@ -30,7 +30,7 @@ db.connect((err)=>{
 })
 //get mapping
 app.get('/listAll',async(req,res)=>{
-    const sql ="select * from details"
+    const sql ="select * from account_details"
     db.query(sql,(err,records)=>{
         if(err){
             res.status(400).json({"error":err.message})
@@ -43,18 +43,42 @@ app.get('/listAll',async(req,res)=>{
         
     })
 })
+//post mapping
+app.post('/insert',async(req,res)=>{
+    const {acc_number,acc_holder,acc_balance}=req.body
+    const sql = "insert into account_details values (?,?,?)"
+    //update mec_students set DOB=?, Age=? where id=?
+    db.query(sql,[acc_number,acc_holder,acc_balance],(err,result)=>{
+        if(err){
+            res.status(500).json({"error":err.message})
+        }
+        res.status(200).json({"message":result.affectedRows})
+    })
+})
+//put mapping update
+app.put('/update/:acc_number',async(req,res)=>{
+    const{acc_holder,acc_balance} = req.body
+    const sql = "update account_details set acc_holder=?,acc_balance=? where acc_number=?"
+    db.query(sql,[acc_holder,acc_balance,req.params.acc_number],(err,result)=>{
+        if(err){
+            res.status(500).json({"error":err.message})
+        }
+        res.status(200).json({"message":result.affectedRows})
+    })
 
-// app.post('/insert',async(req,res)=>{
-//     const {acc_number,acc_holder,acc_balance} = req.body
-//     const sql = "insert into account_details values (?,?,?)"
-//     //update mec_students set DOB=?, Age=? where id=?
-//     db.query(sql,[acc_number,acc_holder,acc_balance],(err,result)=>{
-//         if(err){
-//             res.status(500).json({"error":err.message})
-//         }
-//         res.status(200).json({"message":result.affectedRows})
-//     })
-//})
+})
+//delete mapping
+app.delete('/remove/:acc_number',async(req,res)=>{
+    const sql="delete from account_details where acc_number=?"
+    db.query(sql,[req.params.acc_number],(err,result)=>{
+        if(err){
+            res.status(500).json({"error":err.message})
+        }
+        res.status(200).json({"message":result.affectedRows})
+        })
+    })
+
+
 
 app.listen(1122,()=>{
     console.log("My server is running")
